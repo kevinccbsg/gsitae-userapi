@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const logger = require('./utils/logger');
 const {
   getUser,
-} = require('./userController');
+} = require('./controllers/userController');
 const connect = require('./utils/ddbb');
 
 const debug = require('debug')('GSITAEAPI:server');
