@@ -1,0 +1,17 @@
+{
+  "name": "gsitae-userapi",
+  "version": "1.0.0",
+  "description": "User API for npm to manage oauth2",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node",
+    "express",
+    "userapi",
+    "gsitae"
+  ],
+  "author": "Kevin Julián Martínez Escobar",
+  "license": "ISC"
+}
