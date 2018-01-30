@@ -4,7 +4,7 @@ const {
   DDBBPWD,
 } = require('../secrets');
 
-const IP = 'localhost';
+const IP = 'mongo-dashboard';
 const PORT = 27017;
 
 module.exports = {
