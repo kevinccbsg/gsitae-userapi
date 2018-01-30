@@ -5,9 +5,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const bodyParser = require('body-parser');
 const logger = require('./utils/logger');
-const {
-  getUser,
-} = require('./controllers/userController');
+const router = require('./router');
 const connect = require('./utils/ddbb');
 
 const debug = require('debug')('GSITAEAPI:server');
@@ -25,6 +23,6 @@ app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.get('/user', getUser);
+app.use('/userapi', router);
 
 module.exports = app;
