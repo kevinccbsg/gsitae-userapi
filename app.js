@@ -1,5 +1,4 @@
 const config = require('app-config');
-const path = require('path');
 const Express = require('express');
 const helmet = require('helmet');
 const compression = require('compression');
@@ -7,8 +6,6 @@ const bodyParser = require('body-parser');
 const logger = require('./utils/logger');
 const router = require('./router');
 const connect = require('./utils/ddbb');
-
-const debug = require('debug')('GSITAEAPI:server');
 
 connect(config.mongodb.uri)
   .then(() => logger.info('Successfull connection'))

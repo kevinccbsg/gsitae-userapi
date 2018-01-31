@@ -1,6 +1,8 @@
 const _ = require('lodash');
 const response = require('../utils/responseHelper');
 const User = require('../models/User');
+const Role = require('../models/Role');
+const Permission = require('../models/Permission');
 const logger = require('./../utils/logger');
 
 const debug = require('debug')('GSITAEAPI:userController');
@@ -178,7 +180,7 @@ const getRolePermissions = async (req, res) => {
   try {
     const mongoResponse = await Promise.all([
       Permission.find({}),
-      Roles.find({}),
+      Role.find({}),
     ]);
     logger.info('[userController] User list information');
     return response(res, true, {

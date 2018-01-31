@@ -1,4 +1,4 @@
-const express = require('express');
+const Express = require('express');
 const {
   userList,
   createUser,
@@ -6,7 +6,6 @@ const {
   removeRolePermission,
   addRolePermission,
   deleteUser,
-  getRolePermissions,
 } = require('./../controllers/userController');
 
 const router = Express.Router();
