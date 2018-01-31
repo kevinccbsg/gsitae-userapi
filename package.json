@@ -4,7 +4,8 @@
   "description": "User API for npm to manage oauth2",
   "main": "app.js",
   "scripts": {
-    "start": "NODE_ENV=development DEBUG=GSITAEAPI:* node ./bin/www"
+    "start": "NODE_ENV=development DEBUG=GSITAEAPI:* node ./bin/www",
+    "test": "NODE_ENV=development mocha --exit"
   },
   "keywords": [
     "node",
@@ -28,6 +29,9 @@
   "devDependencies": {
     "eslint": "^4.16.0",
     "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.8.0"
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-mocha": "^4.11.0",
+    "mocha": "^5.0.0",
+    "supertest": "^3.0.0"
   }
 }
