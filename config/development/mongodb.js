@@ -4,9 +4,16 @@ const {
   DDBBPWD,
 } = require('../secrets');
 
-const IP = 'mongo-dashboard';
+const IP = 'localhost';
 const PORT = 27017;
 
+const auth = false;
+
+let strUser = '';
+if (auth) {
+  strUser = `${DDBBUSER}:${DDBBPWD}@`;
+}
+
 module.exports = {
-  uri: `mongodb://${DDBBUSER}:${DDBBPWD}@${IP}:${PORT}/${DB}`,
+  uri: `mongodb://${strUser}${IP}:${PORT}/${DB}`,
 };
