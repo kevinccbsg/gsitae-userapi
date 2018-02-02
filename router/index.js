@@ -1,4 +1,5 @@
 const Express = require('express');
+const { validate } = require('express-jsonschema');
 const {
   userList,
   createUser,
@@ -7,11 +8,14 @@ const {
   addRolePermission,
   deleteUser,
 } = require('./../controllers/userController');
+const {
+  userSchema,
+} = require('./schemas');
 
 const router = Express.Router();
 
 router.get('/users', userList);
-router.post('/user', createUser);
+router.post('/user', validate({ body: userSchema }), createUser);
 router.post('/user/:code/role', addRolePermission);
 router.post('/user/:code/permission', addRolePermission);
 router.delete('/user/:code/role', removeRolePermission);
