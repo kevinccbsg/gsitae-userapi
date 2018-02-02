@@ -94,7 +94,7 @@ const deleteUser = async (req, res) => {
 const getUser = async (req, res) => {
   debug('[userController] getUser');
   const { code } = req.params;
-  if (_.isString(code)) {
+  if (!_.isString(code)) {
     debug('[userController] Error');
     logger.error('[userController] Error getting User. Bad request. identifier must be Number');
     return response(res, 'Bad Request', 400);
