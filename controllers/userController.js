@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const validator = require('validator');
 const response = require('../utils/responseHelper');
 const User = require('../models/User');
 const Role = require('../models/Role');
@@ -34,11 +35,18 @@ const createUser = async (req, res) => {
   debug('[userController] createUser');
   try {
     const payload = _.pick(req.body, userFields);
+    if (!validator.isEmail(payload.email)) {
+      return response(res, 'Bad Request', 400);
+    }
     const newUser = new User(payload);
     await newUser.save();
     return response(res, payload, 201);
   } catch (err) {
     debug('[userController] Error');
+    debug(err.code);
+    if (err.code === 11000) {
+      return response(res, 'Conflict User Already Exists', 409);
+    }
     debug(err);
     logger.error('[userController] Error User list information');
     return response(res, err, 500);
