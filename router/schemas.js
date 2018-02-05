@@ -67,6 +67,15 @@ const userSchema = {
   additionalProperties: false,
 };
 
+const updateUserSchema = Object.assign(
+  {},
+  userSchema,
+  {
+    required: [],
+  },
+);
+
 module.exports = {
   userSchema,
+  updateUserSchema,
 };
