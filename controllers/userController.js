@@ -53,6 +53,38 @@ const createUser = async (req, res) => {
   }
 };
 
+const updateUser = async (req, res) => {
+  debug('[userController] updateUser');
+  const { code } = req.params;
+  try {
+    const responseUser = await User.findOne({ code });
+    if (!responseUser) {
+      const error = {
+        status: 404,
+        message: 'Not found register to delete',
+      };
+      throw error;
+    }
+    const payload = _.pick(req.body, userFields);
+    if (payload.email) {
+      if (!validator.isEmail(payload.email)) {
+        return response(res, 'Bad Request', 400);
+      }
+    }
+    await User.update({ code }, payload);
+    return response(res, payload, 200);
+  } catch (err) {
+    if (err.status === 404) {
+      logger.error('[userController] Error deleting User. Not Found');
+      return response(res, err.message, 404);
+    }
+    debug('[userController] Error');
+    debug(err);
+    logger.error('[userController] Error User list information');
+    return response(res, err, 500);
+  }
+};
+
 const deleteUser = async (req, res) => {
   debug('[userController] deleteUser');
   const { code } = req.params;
@@ -219,4 +251,5 @@ module.exports = {
   createUser,
   userList,
   getRolePermissions,
+  updateUser,
 };
