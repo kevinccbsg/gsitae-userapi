@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const validator = require('validator');
 const response = require('../utils/responseHelper');
 const User = require('../models/User');
 const Role = require('../models/Role');
@@ -21,12 +22,12 @@ const userList = async (req, res) => {
   try {
     const mongoResponse = await User.find({});
     logger.info('[userController] User list information');
-    return response(res, true, { users: mongoResponse }, 200);
+    return response(res, { users: mongoResponse }, 200);
   } catch (err) {
     debug('[userController] Error');
     debug(err);
     logger.error('[userController] Error User list information');
-    return response(res, false, err, 500);
+    return response(res, err, 500);
   }
 };
 
@@ -34,54 +35,63 @@ const createUser = async (req, res) => {
   debug('[userController] createUser');
   try {
     const payload = _.pick(req.body, userFields);
+    if (!validator.isEmail(payload.email)) {
+      return response(res, 'Bad Request', 400);
+    }
     const newUser = new User(payload);
     await newUser.save();
-    return response(res, true, payload, 201);
+    return response(res, payload, 201);
   } catch (err) {
     debug('[userController] Error');
+    debug(err.code);
+    if (err.code === 11000) {
+      return response(res, 'Conflict User Already Exists', 409);
+    }
     debug(err);
     logger.error('[userController] Error User list information');
-    return response(res, false, err, 500);
+    return response(res, err, 500);
   }
 };
 
-const deleteUser = async (req, res) => {
-  debug('[userController] deleteUser');
+const updateUser = async (req, res) => {
+  debug('[userController] updateUser');
   const { code } = req.params;
-  if (_.isString(code)) {
-    debug('[userController] Error');
-    logger.error('[userController] Error deleting User. Bad request. identifier must be String');
-    return response(res, false, 'Bad Request', 400);
-  }
   try {
-    const responseRemove = await User.remove({ code });
-    if (responseRemove.nRemoved === 0) {
+    const responseUser = await User.findOne({ code });
+    if (!responseUser) {
       const error = {
         status: 404,
         message: 'Not found register to delete',
       };
       throw error;
     }
-    return response(res, false, 'User removed', 204);
+    const payload = _.pick(req.body, userFields);
+    if (payload.email) {
+      if (!validator.isEmail(payload.email)) {
+        return response(res, 'Bad Request', 400);
+      }
+    }
+    await User.update({ code }, payload);
+    return response(res, payload, 200);
   } catch (err) {
-    debug('[userController] Error');
     if (err.status === 404) {
       logger.error('[userController] Error deleting User. Not Found');
-      return response(res, false, err.message, 404);
+      return response(res, err.message, 404);
     }
+    debug('[userController] Error');
     debug(err);
-    logger.error('[userController] Error deleting User');
-    return response(res, false, err, 500);
+    logger.error('[userController] Error User list information');
+    return response(res, err, 500);
   }
 };
 
-const getUser = async (req, res) => {
-  debug('[userController] getUser');
+const deleteUser = async (req, res) => {
+  debug('[userController] deleteUser');
   const { code } = req.params;
-  if (_.isString(code)) {
+  if (!_.isString(code)) {
     debug('[userController] Error');
-    logger.error('[userController] Error getting User. Bad request. identifier must be Number');
-    return response(res, false, 'Bad Request', 400);
+    logger.error('[userController] Error deleting User. Bad request. identifier must be String');
+    return response(res, 'Bad Request', 400);
   }
   try {
     const responseUser = await User.findOne({ code });
@@ -92,16 +102,54 @@ const getUser = async (req, res) => {
       };
       throw error;
     }
-    return response(res, false, responseUser, 200);
+    const responseRemove = await User.remove({ code });
+    if (responseRemove.nRemoved === 0) {
+      const error = {
+        status: 404,
+        message: 'Not found register to delete',
+      };
+      throw error;
+    }
+    return response(res, 'User removed', 204);
   } catch (err) {
     debug('[userController] Error');
     if (err.status === 404) {
       logger.error('[userController] Error deleting User. Not Found');
-      return response(res, false, err.message, 404);
+      return response(res, err.message, 404);
     }
     debug(err);
     logger.error('[userController] Error deleting User');
-    return response(res, false, err, 500);
+    return response(res, err, 500);
+  }
+};
+
+const getUser = async (req, res) => {
+  debug('[userController] getUser');
+  const { code } = req.params;
+  if (!_.isString(code)) {
+    debug('[userController] Error');
+    logger.error('[userController] Error getting User. Bad request. identifier must be Number');
+    return response(res, 'Bad Request', 400);
+  }
+  try {
+    const responseUser = await User.findOne({ code });
+    if (!responseUser) {
+      const error = {
+        status: 404,
+        message: 'Not found register to delete',
+      };
+      throw error;
+    }
+    return response(res, responseUser, 200);
+  } catch (err) {
+    debug('[userController] Error');
+    if (err.status === 404) {
+      logger.error('[userController] Error deleting User. Not Found');
+      return response(res, err.message, 404);
+    }
+    debug(err);
+    logger.error('[userController] Error deleting User');
+    return response(res, err, 500);
   }
 };
 
@@ -112,7 +160,7 @@ const addRolePermission = async (req, res) => {
   if (_.isString(code)) {
     debug('[userController] Error');
     logger.error('[userController] Error adding Role User. Bad request. identifier must be Number');
-    return response(res, false, 'Bad Request', 400);
+    return response(res, 'Bad Request', 400);
   }
   try {
     const responseUser = await User.update({ code }, {
@@ -127,16 +175,16 @@ const addRolePermission = async (req, res) => {
       };
       throw error;
     }
-    return response(res, false, `Updating ${property}`, 200);
+    return response(res, `Updating ${property}`, 200);
   } catch (err) {
     debug('[userController] Error');
     if (err.status === 404) {
       logger.error('[userController] Error updating User. Not Found');
-      return response(res, false, err.message, 404);
+      return response(res, err.message, 404);
     }
     debug(err);
     logger.error('[userController] Error updating User');
-    return response(res, false, err, 500);
+    return response(res, err, 500);
   }
 };
 
@@ -147,7 +195,7 @@ const removeRolePermission = async (req, res) => {
   if (_.isString(code)) {
     debug('[userController] Error');
     logger.error(`[userController] Error adding ${property} User. Bad request. identifier must be Number`);
-    return response(res, false, 'Bad Request', 400);
+    return response(res, 'Bad Request', 400);
   }
   try {
     const responseUser = await User.update({ code }, {
@@ -162,16 +210,16 @@ const removeRolePermission = async (req, res) => {
       };
       throw error;
     }
-    return response(res, false, `Removed ${property}`, 204);
+    return response(res, `Removed ${property}`, 204);
   } catch (err) {
     debug('[userController] Error');
     if (err.status === 404) {
       logger.error('[userController] Error updating User. Not Found');
-      return response(res, false, err.message, 404);
+      return response(res, err.message, 404);
     }
     debug(err);
     logger.error('[userController] Error updating User');
-    return response(res, false, err, 500);
+    return response(res, err, 500);
   }
 };
 
@@ -183,7 +231,7 @@ const getRolePermissions = async (req, res) => {
       Role.find({}),
     ]);
     logger.info('[userController] User list information');
-    return response(res, true, {
+    return response(res, {
       roles: mongoResponse[1],
       permissions: mongoResponse[0],
     }, 200);
@@ -191,7 +239,7 @@ const getRolePermissions = async (req, res) => {
     debug('[userController] Error');
     debug(err);
     logger.error('[userController] Error User list information');
-    return response(res, false, err, 500);
+    return response(res, err, 500);
   }
 };
 
@@ -203,4 +251,5 @@ module.exports = {
   createUser,
   userList,
   getRolePermissions,
+  updateUser,
 };
