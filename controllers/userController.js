@@ -61,21 +61,23 @@ const updateUser = async (req, res) => {
     if (!responseUser) {
       const error = {
         status: 404,
-        message: 'Not found register to delete',
+        message: 'Not found register to update',
       };
       throw error;
     }
-    const payload = _.pick(req.body, userFields);
+    const payload = req.body;
     if (payload.email) {
       if (!validator.isEmail(payload.email)) {
         return response(res, 'Bad Request', 400);
       }
     }
-    await User.update({ code }, payload);
+    debug(code);
+    const responseUpdate = await User.update({ code }, payload);
+    debug(responseUpdate);
     return response(res, payload, 200);
   } catch (err) {
     if (err.status === 404) {
-      logger.error('[userController] Error deleting User. Not Found');
+      logger.error('[userController] Error updating User. Not Found');
       return response(res, err.message, 404);
     }
     debug('[userController] Error');
@@ -119,7 +121,7 @@ const deleteUser = async (req, res) => {
     }
     debug(err);
     logger.error('[userController] Error deleting User');
-    return response(res, err, 500);
+    return response(res, err, err.status);
   }
 };
 
@@ -136,7 +138,7 @@ const getUser = async (req, res) => {
     if (!responseUser) {
       const error = {
         status: 404,
-        message: 'Not found register to delete',
+        message: 'Not found user',
       };
       throw error;
     }

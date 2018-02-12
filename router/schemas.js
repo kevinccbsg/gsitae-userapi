@@ -29,33 +29,15 @@ const userSchema = {
     roles: {
       type: 'array',
       items: {
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-            description: 'Role name',
-          },
-          description: {
-            type: 'string',
-            description: 'Role description',
-          },
-        },
+        type: 'string',
+        description: 'Role',
       },
     },
     permissions: {
       type: 'array',
       items: {
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-            description: 'Role name',
-          },
-          description: {
-            type: 'string',
-            description: 'Role description',
-          },
-        },
+        type: 'string',
+        description: 'Permission',
       },
     },
   },

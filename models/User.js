@@ -19,14 +19,8 @@ const userSchema = new Schema({
   email: String,
   grade: String,
   faculty: String,
-  roles: [{
-    name: String,
-    description: String,
-  }],
-  permissions: [{
-    name: String,
-    description: String,
-  }],
+  roles: [String],
+  permissions: [String],
 }, { versionKey: false, collection: 'users' });
 
 const User = mongoose.model('User', userSchema);
