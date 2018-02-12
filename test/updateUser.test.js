@@ -18,10 +18,7 @@ const updateErrorMailPayload = {
 
 const updatePayload = {
   email: 'kevin123@gmail.com',
-  roles: [{
-    name: 'ADMIN',
-    description: 'Administrador',
-  }],
+  roles: ['ADMIN'],
 };
 
 let idUser = '';
