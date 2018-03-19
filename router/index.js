@@ -35,6 +35,8 @@ router.delete('/user/:code', deleteUser);
 router.get('/user/:code', getUser);
 router.patch('/user/:code', validate({ body: updateUserSchema }), updateUser);
 
+router.get('/whoiam', getUser);
+
 router.get('/permissions', permissionList);
 router.post('/permission', createPermission);
 router.patch('/permission/:code', updatePermission);
