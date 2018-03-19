@@ -128,13 +128,18 @@ const deleteUser = async (req, res) => {
 const getUser = async (req, res) => {
   debug('[userController] getUser');
   const { code } = req.params;
-  if (!_.isString(code)) {
+  const isWhoIAM = req.originalUrl.includes('whoiam');
+  if (!_.isString(code) && !isWhoIAM) {
     debug('[userController] Error');
     logger.error('[userController] Error getting User. Bad request. identifier must be Number');
     return response(res, 'Bad Request', 400);
   }
   try {
-    const responseUser = await User.findOne({ code });
+    let queryCode = code;
+    if (isWhoIAM) {
+      queryCode = req.headers['x-authenticated-userid'];
+    }
+    const responseUser = await User.findOne({ code: queryCode });
     if (!responseUser) {
       const error = {
         status: 404,
