@@ -15,6 +15,8 @@ const userFields = [
   'email',
   'grade',
   'faculty',
+  'roles',
+  'permissions',
 ];
 
 const userList = async (req, res) => {
